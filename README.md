@@ -6,10 +6,10 @@ Maple is a small, recursive router for Node.js. It works by creating a routing t
 Maple is designed to be minimal. It is written with the intention that other libraries can be built on top of it or extend its functionality.
 
 ####Install
-    npm install Maple
+    npm install mapleTree
 #### From Source
-    git clone git://github.com/saambarati/Maple.git
-    cd Maple
+    git clone git://github.com/saambarati/mapleTree.git
+    cd mapleTree
     npm link
 
 API
