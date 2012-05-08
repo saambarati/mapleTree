@@ -1,0 +1,17 @@
+{
+  "name"           : "mapleTree"
+  , "version"      : "0.1.6" 
+  , "private"      : false 
+  , "author"       : "Saam Barati <saambarati1@gmail.com>" 
+  , "contributors" : [ {"name" : "Saam Barati", "email" : "saambarati1@gmail.com"} ]
+  , "repository"   : { 
+                       "type"  : "git"
+                       , "url" : "https://github.com/saambarati/Maple"
+                     }
+  , "bugs"         : { "url" : "https://github.com/saambarati/Maple/issues" }
+  , "keywords"     : ["router", "routing", "route"]
+  , "license"      : "MIT" 
+  , "engine"       : { "node" : ">=0.6.11" }
+
+  , "main"         : "./treeRouter.js"
+}
