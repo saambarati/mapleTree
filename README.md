@@ -2,8 +2,8 @@
 mapleTree
 =========
 
-Maple is a small, recursive router for Node.js. It works by creating a routing tree and searching for full and partial matches.
-Maple is designed to be minimal. It is written with the intention that other libraries can be built on top of it or extend its functionality.
+mapleTree is a small, recursive router for Node.js. It works by creating a routing tree and searching for full and partial matches.
+mapleTree is designed to be minimal. It is written with the intention that other libraries will be built on top of it or extend its functionality.
 
 ####Install
     npm install mapleTree
