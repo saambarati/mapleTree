@@ -6,9 +6,9 @@
   , "contributors" : [ {"name" : "Saam Barati", "email" : "saambarati1@gmail.com"} ]
   , "repository"   : { 
                        "type"  : "git"
-                       , "url" : "https://github.com/saambarati/Maple"
+                       , "url" : "https://github.com/saambarati/mapleTree"
                      }
-  , "bugs"         : { "url" : "https://github.com/saambarati/Maple/issues" }
+  , "bugs"         : { "url" : "https://github.com/saambarati/mapleTree/issues" }
   , "keywords"     : ["router", "routing", "route"]
   , "license"      : "MIT" 
   , "engine"       : { "node" : ">=0.6.11" }
