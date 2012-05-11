@@ -39,7 +39,7 @@ API
       *  matcher.perfect = {boolean} default => false    //were we able to match an exact path, or did we only match partially?
       *  matcher.extras = {Array}                        //match a regexp capture group that isn't part of params
       *  matcher.params = {Object}                       //collection of colon args
-      *  matcher.next {function}                         //invoke next matching function if there is one
+      *  matcher.next {function}                         //invoke next matching function if one exists
      */ 
      var match = router.match('/foo/bar/')
      match.fn()  //prints 'foo/bar route'
