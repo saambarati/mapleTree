@@ -36,7 +36,7 @@ API
       *  the matcher object
       *  contains a few important properties
       *  matcher.cbs = {Array}                           //collection of callbacks, the closest match first
-      *  matcher.fn = {function}                         //placeholder for best matching function
+      *  matcher.fn = {function}                         //placeholder for best matching function. The best depends on 'fifo' being true or false. (see below)
       *  matcher.perfect = {boolean} default => false    //were we able to match an exact path, or did we only match partially?
       *  matcher.extras = {Array}                        //match a regexp capture group that isn't part of params
       *  matcher.params = {Object}                       //collection of colon args
