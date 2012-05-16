@@ -25,23 +25,18 @@ var RouteNode = function (reg_exp, params_a, cb) {
   self.callback = cb  //callback is optional, if we don't have a callback, it means that we aren't an executable route,
   if (params_a) { self.params = params_a } 
 }
-//util.inherits(RouteNode, events.EventEmitter)
-//should RouteTree or RouteNode be the event emitter? question to answer later
 
 /*
- *
  * @param {object} options
- * flags => 'fifo' : true or false (false default)  //represents how we match partially
+ * flags => 'fifo' : true or false (false default)  //represents order of how we match routes
  */
 var RouteTree = function (options) {
    this.root = new RouteNode(/^$/)
    if (!options) {
-     options = {}
-     options.fifo = false
+     options = {'fifo' : false}
    }
    this.fifo = options.fifo
 }
-util.inherits(RouteTree, events.EventEmitter)
 
 RouteTree.prototype._defineRecursiveHelper = function (curNode, splats, cb) {
   //debugger
@@ -73,6 +68,10 @@ RouteTree.prototype._defineRecursiveHelper = function (curNode, splats, cb) {
   }
 }
 
+/*
+ * @param {string|regexp} path
+ * @param {function} callback
+ */
 RouteTree.prototype.define = function (path, callback) {
    if (!path || !callback) { throw new Error('tree needs a path and a callback to be defined') }
    var prereq = / |\?/g
@@ -97,12 +96,10 @@ RouteTree.prototype.define = function (path, callback) {
          this._defineRecursiveHelper(this.root, matches, callback)
       }
    } else if (path instanceof RegExp) {
-      //TODO
-      //figure out an elegant way to handle this that doesn't involve only definining it as root's child
+      //TODO figure out an elegant way to handle this that doesn't involve only definining it as root's child
       var newNode = new RouteNode(path, callback) 
       this.root.children.push(newNode)
    }
-
 }
 
 RouteTree.prototype._matchRecursiveHelper = function (curNode, curPath, matcher) {
@@ -132,28 +129,29 @@ RouteTree.prototype._matchRecursiveHelper = function (curNode, curPath, matcher)
            }
          }
          curPath = curPath.slice(mPath.length + 1)
-         if (curPath.length && curPath !== '/') {    //continute recursive search
+         if (curPath.length && curPath !== '/') {    
            if (mNode.callback) { matcher.cbs.push(mNode.callback) }
-           return this._matchRecursiveHelper(mNode , curPath, matcher) 
+           this._matchRecursiveHelper(mNode , curPath, matcher) //continute recursive search
          } else {
-           if (mNode.callback) { //callback indicates this route was explicitly declared, not just a branch of another route
+           if (mNode.callback) { //callback indicates this route was explicitly declared, not just a branch of another route, recursion ends
              matcher.perfect = true 
              matcher.cbs.push(mNode.callback)
            }
-           return matcher 
          }
       }
    }
-
-   return matcher
 }
 
+/*
+ * @param {string} path
+ * @return an instance of Matcher
+ */
 RouteTree.prototype.match = function (path) {
   var matcher = new Matcher()
     , decodedPath
-  //normalize data, this is necessary
+
   if (path.charAt(0) !== '/') { path = '/' + path }
-  if (path.charAt(path.length-1) !== '/') { path += '/' } //normalize routes coming in
+  if (path.charAt(path.length-1) !== '/') { path += '/' } //normalize routes coming in, this is necessary for when we slice the path in recursive helper
   
   try {
     decodedPath = decodeURIComponent(path)
@@ -164,9 +162,7 @@ RouteTree.prototype.match = function (path) {
 
   this._matchRecursiveHelper(this.root, decodedPath, matcher)
  
-  //callbacks are added in least preferential order through push(), so reverse order so we get the best match be first
-  // TODO, what's more effieicent, adding callbacks using unshift() instead of push, or just reversing the order after the fact
-  // gut says push(), then rever() is more efficient
+  //callbacks are added in preorder fashion, so if we want filo, we must reverse the order of fns
   if (!this.fifo) { matcher.cbs.reverse() }
   matcher.fn = matcher.cbs.shift()
 
@@ -187,9 +183,8 @@ Matcher.prototype.next = function () {
 }
 
 var _removeBeginEndSlash  = function (path) {
-  var rtn = path.replace(/\/$/, '')
-  rtn = rtn.replace(/^\//, '')
-  return rtn
+  return path.replace(/\/$/, '')
+             .replace(/^\//, '')
 }
 
 

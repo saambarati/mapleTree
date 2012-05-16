@@ -11,7 +11,7 @@
   , "bugs"         : { "url" : "https://github.com/saambarati/mapleTree/issues" }
   , "keywords"     : ["router", "routing", "route"]
   , "license"      : "MIT" 
-  , "engine"       : { "node" : ">=0.6.11" }
+  , "engines"       : { "node" : ">=0.6.11" }
 
   , "main"         : "./treeRouter.js"
 }
