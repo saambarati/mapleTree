@@ -87,3 +87,15 @@ API
       *  /hello/world/foo/
      */
   
+
+### Some Notes
+
+Routing using `match.next` will not match against the root (`/`) route. I figure if you need a function to run against
+the root, it is better served being run outside of the router, considering you want it to run every time.
+I could be wrong about this stance though, and am interested in listening to arguments defending the contrary. 
+Maybe if enough people want the functionality I can add it as an option when instantiating the router similar to `fifo`.
+
+
+
+
+
