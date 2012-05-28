@@ -38,7 +38,7 @@ var RouteTree = function (options) {
    this.fifo = options.fifo
 }
 
-RouteTree.prototype._defineRecursiveHelper = function (curNode, splats, cb) {
+RouteTree.prototype._defineRecursiveHelper = function (curNode, splats, cb, fullPath) {
   //debugger
   var currentRoute = splats.shift() 
      , newNode 
@@ -47,21 +47,20 @@ RouteTree.prototype._defineRecursiveHelper = function (curNode, splats, cb) {
 
   for (i = 0; i < curNode.children.length; i++) {    //does a child node with same key already exist?
     if (curNode.children[i].key === curKey) {  
-      if (splats.length) { this._defineRecursiveHelper(curNode.children[i], splats, cb) }
+      if (splats.length) { this._defineRecursiveHelper(curNode.children[i], splats, cb, fullPath) }
       else { 
         //redefine callback, maybew throw error in future, or warn the user
-        if (curNode.children[i].callback) { console.warn('WARNING: redefining route, this will create routing conflicts') }
+        if (curNode.children[i].callback) { console.warn('WARNING: redefining route, this will create routing conflicts. Route => ' + fullPath) }
         curNode.children[i].callback = cb
       }
       return //don't allow anything else to happen on current call frame
     }
   }
-
   //debugger
   newNode = new RouteNode(currentRoute.regexp, currentRoute.params) 
   curNode.children.push(newNode)
   if (splats.length) {
-    this._defineRecursiveHelper(newNode, splats, cb)
+    this._defineRecursiveHelper(newNode, splats, cb, fullPath)
   } else {
     //end of recursion, we have a matching function
     newNode.callback = cb
@@ -93,11 +92,11 @@ RouteTree.prototype.define = function (path, callback) {
          for (i = 0; i < portions.length; i+=1) {
             matches[i] = match(portions[i])  //returns {regexp:reg , params:[id1,id2,...]}
          }
-         this._defineRecursiveHelper(this.root, matches, callback)
+         this._defineRecursiveHelper(this.root, matches, callback, path)
       }
    } else if (path instanceof RegExp) {
       //TODO figure out an elegant way to handle this that doesn't involve only definining it as root's child
-      var newNode = new RouteNode(path, callback) 
+      var newNode = new RouteNode(path, callback)
       this.root.children.push(newNode)
    }
 }
