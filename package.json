@@ -1,6 +1,6 @@
 {
   "name"           : "mapleTree"
-  , "version"      : "0.1.9" 
+  , "version"      : "0.1.10" 
   , "private"      : false 
   , "author"       : "Saam Barati <saambarati1@gmail.com>" 
   , "contributors" : [ {"name" : "Saam Barati", "email" : "saambarati1@gmail.com"} ]
