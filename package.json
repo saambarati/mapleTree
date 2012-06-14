@@ -1,6 +1,7 @@
 {
   "name"           : "mapleTree"
-  , "version"      : "0.1.10" 
+  , "description"  : "Simple routing library for node.js"
+  , "version"      : "0.1.11" 
   , "private"      : false 
   , "author"       : "Saam Barati <saambarati1@gmail.com>" 
   , "contributors" : [ {"name" : "Saam Barati", "email" : "saambarati1@gmail.com"} ]
