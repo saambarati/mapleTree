@@ -15,4 +15,5 @@
   , "engines"       : { "node" : ">=0.6.11" }
 
   , "main"         : "./treeRouter.js"
+  , "scripts" : { "test" : "node ./tests/run.js"}
 }
