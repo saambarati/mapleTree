@@ -103,7 +103,7 @@ matcher = tree.match('/form.json')
 assert.ok(matcher.fn)
 
 
-console.log('\n\nall tests have passed')
+console.log('tests have passed in test-tree.js')
 
 
 

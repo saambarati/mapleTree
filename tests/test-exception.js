@@ -19,9 +19,7 @@ var f = function (){}
 
 //assert.throws(function () { tree.define('/hello world/', f) }, validate, eName)
 assert.throws(thrower(tree.define, '/hello world/', f), validate)
-assert.throws(thrower(tree.define, '/hello world?/', f), validate)
-assert.throws(thrower(tree.define, '/hello?world', f) , validate)
-assert.throws(thrower(tree.define, '/helloworld?', f), validate)
+assert.throws(thrower(tree.define, '/ helloworld/', f), validate)
 assert.throws(thrower(tree.define, '/routeWithoutCallback'), validate)
 assert.throws(thrower(tree.match))
 

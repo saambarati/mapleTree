@@ -50,7 +50,7 @@ RouteTree.prototype._defineRecursiveHelper = function (curNode, splats, cb, full
       if (splats.length) { this._defineRecursiveHelper(curNode.children[i], splats, cb, fullPath) }
       else { 
         //redefine callback, maybew throw error in future, or warn the user
-        if (curNode.children[i].callback) { console.warn('WARNING: redefining route, this will create routing conflicts. Route => ' + fullPath) }
+        if (curNode.children[i].callback) { console.warn('WARNING: redefining route, this will create routing conflicts. Conflicted path => ' + fullPath) }
         curNode.children[i].callback = cb
       }
       return //don't allow anything else to happen on current call frame
@@ -68,15 +68,40 @@ RouteTree.prototype._defineRecursiveHelper = function (curNode, splats, cb, full
 }
 
 /*
+ * gather array of potential paths, may include '?' may not
+ * @param {string} path
+ * @return {array} of potential paths
+*/
+function getQMarkPaths(apath, paths) {
+  var qi = apath.indexOf('?')
+    , i = qi
+    , prev
+
+  if (qi === -1) { //fin de recursive
+    paths.push(apath)
+    //console.log('allpaths======> \n' + paths)
+    return paths
+  }
+  //take away ? mark and recursively add paths to support more than 1 qmark.
+  while (apath.charAt(--i) !== '/')
+    ;
+
+  paths.push(apath.slice(0, i)) //add path without qmark route
+  return getQMarkPaths(apath.slice(0, qi) + apath.slice(qi+1), paths) //remove current ? mark in question
+}
+
+/*
  * @param {string|regexp} path
  * @param {function} callback
  */
 RouteTree.prototype.define = function (path, callback) {
    if (!path || !callback) { throw new Error('tree needs a path and a callback to be defined') }
-   var prereq = / |\?/g
+   var prereq = / /g
       , portions
       , matches = []
       , i
+      , j
+      , paths
 
    if (typeof path === 'string') {
       if (prereq.test(path)) {
@@ -87,12 +112,16 @@ RouteTree.prototype.define = function (path, callback) {
          var rootNode = new RouteNode(/^\/$/, callback)
          this.root.children.unshift(rootNode) //keep root at front of array to optimize the match against root, will stay O(1)
       } else {
-         path = _removeBeginEndSlash(path)
-         portions = path.split('/') 
-         for (i = 0; i < portions.length; i+=1) {
-            matches[i] = match(portions[i])  //returns {regexp:reg , params:[id1,id2,...]}
-         }
-         this._defineRecursiveHelper(this.root, matches, callback, path)
+        //generate questionmark paths
+         paths = getQMarkPaths(path, [])
+         paths.forEach(function (apath) {
+           apath = _removeBeginEndSlash(apath)
+           portions = apath.split('/') 
+           for (i = 0; i < portions.length; i+=1) {
+              matches[i] = match(portions[i])  //returns {regexp:reg , params:[id1,id2,...]}
+           }
+           this._defineRecursiveHelper(this.root, matches, callback, path) //note original path here for redefine warnings
+         }, this)
       }
    } else if (path instanceof RegExp) {
       //TODO figure out an elegant way to handle this that doesn't involve only definining it as root's child
