@@ -166,6 +166,7 @@ RouteTree.prototype._matchRecursiveHelper = function (curNode, curPath, matcher)
              matcher.cbs.push(mNode.callback)
            }
          }
+         return
       }
    }
 }
