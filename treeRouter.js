@@ -166,7 +166,7 @@ RouteTree.prototype._matchRecursiveHelper = function (curNode, curPath, matcher)
              matcher.cbs.push(mNode.callback)
            }
          }
-         return
+         return //dive deeper into the tree, don't allow more matches at this level in the tree
       }
    }
 }
