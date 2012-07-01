@@ -158,7 +158,7 @@ RouteTree.prototype._matchRecursiveHelper = function (curNode, curPath, matcher)
          }
          curPath = curPath.slice(mPath.length + 1)
          if (curPath.length && curPath !== '/') {    
-           if (mNode.callback) { matcher.cbs.push(mNode.callback) }
+           if (mNode.callback) { matcher.cbs.push(mNode.callback) } //TODO, should I add callbacks consecutively if they are the same function from ? mark routes
            this._matchRecursiveHelper(mNode , curPath, matcher) //continute recursive search
          } else {
            if (mNode.callback) { //callback indicates this route was explicitly declared, not just a branch of another route, recursion ends

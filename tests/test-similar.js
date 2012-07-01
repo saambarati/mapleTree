@@ -6,25 +6,22 @@ var maple = require('../treeRouter.js')
 
 
 //the purpose of this test is to make sure similar routes don't interfere with one another. I made this because I had an early bug where routes differing by 1 letter would sometimes match
-tree.define('/trees.e/', function () {
-  console.log('/trees.e')
-})
+function a(){}
+function b(){}
+function c(){}
 
-tree.define('/trees/', function () {
-  console.log('/trees')
-})
-
-tree.define('/tree/', function () {
-  console.log('/tree')
-})
+tree.define('/trees.e/', a)
+tree.define('/trees/', b)
+tree.define('/tree/', c)
 
 var matcher
 
-matcher = tree.match('/tree')
-matcher.fn()
+matcher = tree.match('/trees.e')
+assert(matcher.fn === a)
 
 matcher = tree.match('/trees')
-matcher.fn()
+assert(matcher.fn === b)
 
-matcher = tree.match('/trees.e')
-matcher.fn()
+matcher = tree.match('/tree')
+assert(matcher.fn === c)
+
