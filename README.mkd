@@ -96,6 +96,7 @@ I could be wrong about this stance though, and am interested in listening to arg
 Maybe if enough people want the functionality I can add it as an option when instantiating the router similar to `fifo`.
 
 
+###### Licensed under The MIT License
 
 
 
