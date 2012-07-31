@@ -65,7 +65,7 @@ var createRoute = function(aRoute) {
         regEx = '^\\/?'
         while (cur) {
           switch (cur) {
-             case '/' :
+             case '/' : //note, this is not currently being used due to treeRouter's implementation stripping away the forward slashes
                regEx += '\/'
                next()
                break

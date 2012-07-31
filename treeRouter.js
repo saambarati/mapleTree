@@ -71,23 +71,27 @@ RouteTree.prototype._defineRecursiveHelper = function (curNode, splats, cb, full
  * gather array of potential paths, may include '?' may not
  * @param {string} path
  * @return {array} of potential paths
+ *
+ * this function works based on the assumption that if the latter question mark routes match
+ * then the earlier question marks in the route are assumed to be matching as well, therefore we can remove the ?marks
+ * this function continually adds the path preceding the earliest ?mark into the paths array, 
+ * stripping the ?mark, and reapplying the same logic to the rest of the string 
 */
 function getQMarkPaths(apath, paths) {
-  var qi = apath.indexOf('?')
+  var qi = apath.indexOf('?') //returns first occuring index
     , i = qi
     , prev
 
-  if (qi === -1) { //fin de recursive
+  if (qi === -1) { //recursion has finished
     paths.push(apath)
-    //console.log('allpaths======> \n' + paths)
     return paths
   }
   //take away ? mark and recursively add paths to support more than 1 qmark.
   while (apath.charAt(--i) !== '/')
     ;
 
-  paths.push(apath.slice(0, i)) //add path without qmark route
-  return getQMarkPaths(apath.slice(0, qi) + apath.slice(qi+1), paths) //remove current ? mark in question
+  paths.push(apath.slice(0, i)) //add current matching path without qmark
+  return getQMarkPaths(apath.slice(0, qi) + apath.slice(qi+1), paths) //remove current ? mark in question, and reapply logic to next potential ?mark
 }
 
 /*
@@ -105,7 +109,7 @@ RouteTree.prototype.define = function (path, callback) {
 
    if (typeof path === 'string') {
       if (prereq.test(path)) {
-         throw new Error('path cannot contain spaces or a question mark')
+         throw new Error('path cannot contain spaces')
       }
       //debugger
       if (path === '/') {
@@ -114,6 +118,7 @@ RouteTree.prototype.define = function (path, callback) {
       } else {
         //generate questionmark paths
          paths = getQMarkPaths(path, [])
+         //console.log(paths)
          paths.forEach(function (apath) {
            apath = _removeBeginEndSlash(apath)
            portions = apath.split('/') 
