@@ -91,7 +91,7 @@ API
 
 
 ### URL Pattern Matching
-The  `pattern` API works similar to the `define` API. You pass `mapleTree.pattern` a patterned URL to match against, and it returns a function that when passsed a string as a parameter
+The  `pattern` API works similarly to the `define` API. You pass `mapleTree.pattern` a patterned URL to match against, and it returns a function that when passed a string as a parameter
 will return a `boolean` indicating whether it matches the parameter or not.
 
     var mapleTree = require('mapleTree')
