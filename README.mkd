@@ -88,6 +88,23 @@ API
      */
   
 
+
+
+### URL Pattern Matching
+The  `pattern` API works similar to the `define` API. You pass `mapleTree.pattern` a patterned URL to match against, and it returns a function that when passsed a string as a parameter
+will return a `boolean` indicating whether it matches the parameter or not.
+
+    var mapleTree = require('mapleTree')
+    var match = mapleTree.pattern('/test/:var') //returns a function
+    console.log(match('/test/yes')) // true
+    console.log(match('/test/'))    // false
+    console.log(match('/nope/'))    // false
+
+    var match = mapleTree.pattern('wildcard/*')
+    console.log(match('/wildcard/')) // false
+    console.log(match('/wildcard/some/extended/route/')) // true
+
+
 ### Some Notes
 
 Routing using `match.next` will not match against the root (`/`) route. I figure if you need a function to run against

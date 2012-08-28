@@ -17,7 +17,7 @@ tree.define('/colon/:hello/definite', function () {
 })
 //note, above route will hold preference because it was defined first
 //note, when routes overlap, it is good practice to name the colon arguments the same, because otherwise, you may run into funky behavior
-tree.define('/colon/:hello/:finish', function () {
+tree.define('/colon/:hello/:finish/', function () {
    console.log('colon match')
 })
 
@@ -74,9 +74,9 @@ matcher = tree.match('/colon/hello%20world/definite') //test decodeURIComponent
 assert.ok(matcher.perfect)
 assert.equal(matcher.params.hello, 'hello world')
 
-matcher = tree.match('/wildcard/i/can/match/anything')
+matcher = tree.match('/wildcard/i/can/match/anything/')
 assert.ok(matcher.perfect)
-assert.equal(matcher.extras[0], 'i/can/match/anything')
+assert.equal(matcher.extras[0], 'i/can/match/anything/')
 
 matcher = tree.match('/wildcard/')
 if (matcher.fn) { throw new Error("this route should not match")}
