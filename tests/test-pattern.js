@@ -19,6 +19,7 @@ assert(match('/bar/') === false)
 
 match = maple.pattern('/wildcard/*')
 assert(match('/wildcard/') === false)
+assert(match('/wildcard') === false)
 assert(match('/wildcard/foo/') === true) //keep with ending and not ending slash
 assert(match('/wildcard/foo') === true)
 assert(match('/wildcard/foo/bar') === true)

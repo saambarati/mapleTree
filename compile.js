@@ -73,7 +73,6 @@ function createRoute() {
         switch (cur) {
           case '/' : //note, this is not currently being used due to treeRouter's implementation stripping away the forward slashes, but is used for pattern matching API
             regEx += '\\/'
-            if (curIndex === myStr.length-1) regEx += '?' //trailing slash at end of route is optional
             next()
             break
           case '*' :
@@ -82,7 +81,7 @@ function createRoute() {
           case ':' : 
             regEx += colon()
             break
-          case '.' : 
+          case '.' :
             regEx += '\\.'
             next()
             break

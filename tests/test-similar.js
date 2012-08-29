@@ -14,7 +14,22 @@ tree.define('/trees.e/', a)
 tree.define('/trees/', b)
 tree.define('/tree/', c)
 
-var matcher
+
+//taken straight from problem with tako
+tree.define('/file/js', function() {
+})
+tree.define('/files/*', function () {
+   console.log('wildcard')
+})
+
+var matcher = tree.match('/files/hello')
+assert(matcher.perfect)
+
+matcher = tree.match('/files/hello.js')
+assert(matcher.perfect)
+
+matcher = tree.match('/file/js')
+assert(matcher.perfect)
 
 matcher = tree.match('/trees.e')
 assert(matcher.fn === a)

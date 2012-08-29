@@ -99,7 +99,7 @@ RouteTree.prototype.define = function (path, callback) {
            apath = _removeBeginEndSlash(apath)
            portions = apath.split('/') 
            for (i = 0; i < portions.length; i+=1) {
-             portions[i] = '/' + portions[i]  //prepend slashes for each regexp to normalize compiled regexps
+             portions[i] = '/'+portions[i]+'/'  //prepend slashes for each regexp to normalize compiled regexps
              matches[i] = compile(portions[i])  //returns {regexp:reg , params:[id1,id2,...]}
            }
            this._defineRecursiveHelper(this.root, matches, callback, path) //note original path here for redefine warnings
@@ -148,7 +148,7 @@ RouteTree.prototype.match = function (path) {
   var matcher = new Matcher()
     , decodedPath
 
-  path = _normalizePathForMatch(path)
+  path = _normalizePathForMatch(path) //prepend and append '/'
 
   try {
     decodedPath = decodeURIComponent(path)
