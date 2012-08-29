@@ -9,6 +9,8 @@ var maple = require('../treeRouter.js')
 function a(){}
 function b(){}
 function c(){}
+function d(){}
+function e(){}
 
 tree.define('/trees.e/', a)
 tree.define('/trees/', b)
@@ -16,20 +18,20 @@ tree.define('/tree/', c)
 
 
 //taken straight from problem with tako
-tree.define('/file/js', function() {
-})
-tree.define('/files/*', function () {
-   console.log('wildcard')
-})
+tree.define('/file/js', d)
+tree.define('/files/*', e)
 
 var matcher = tree.match('/files/hello')
 assert(matcher.perfect)
+assert(matcher.fn === e)
 
 matcher = tree.match('/files/hello.js')
 assert(matcher.perfect)
+assert(matcher.fn === e)
 
 matcher = tree.match('/file/js')
 assert(matcher.perfect)
+assert(matcher.fn === d)
 
 matcher = tree.match('/trees.e')
 assert(matcher.fn === a)
