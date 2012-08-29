@@ -51,11 +51,11 @@ function createRoute() {
       }
     keys.push(aKey)
 
-      return '([^\/]+)'
+      return '([^\\/]+)'
   } 
 
   function wildcard () {
-    return '(.+)'
+    return '(.+)\\/' //capture everything but the final '/'
   }
 
   function exactPath () {
@@ -68,7 +68,7 @@ function createRoute() {
   }
 
   function startMatching () {
-    regEx = '^'
+    regEx = '^' //match from beginning
       while (cur) {
         switch (cur) {
           case '/' : //note, this is not currently being used due to treeRouter's implementation stripping away the forward slashes, but is used for pattern matching API

@@ -74,9 +74,15 @@ matcher = tree.match('/colon/hello%20world/definite') //test decodeURIComponent
 assert.ok(matcher.perfect)
 assert.equal(matcher.params.hello, 'hello world')
 
-matcher = tree.match('/wildcard/i/can/match/anything/')
+matcher = tree.match('/wildcard/i/can/match/anything')
 assert.ok(matcher.perfect)
-assert.equal(matcher.extras[0], 'i/can/match/anything/')
+//console.log(matcher.extras)
+assert.equal(matcher.extras[0], 'i/can/match/anything')
+
+matcher = tree.match('/wildcard/i/')
+assert.ok(matcher.perfect)
+//console.log(matcher.extras)
+assert.equal(matcher.extras[0], 'i')
 
 matcher = tree.match('/wildcard/')
 if (matcher.fn) { throw new Error("this route should not match")}
