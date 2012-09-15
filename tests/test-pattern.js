@@ -39,3 +39,10 @@ assert(match('/question/second/yessir') === true)
 assert(match('/question/second/hello/nope') === false)
 assert(match('/question/nope') === false)
 assert(match('/question/') === false)
+
+match = maple.pattern('/prefix-*')
+assert(match('/prefix-hello') === true)
+assert(match('/prefix') === false)
+assert(match('/prefix-') === false)
+assert(match('/prefix-a') === true)
+
