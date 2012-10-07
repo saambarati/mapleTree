@@ -24,8 +24,8 @@ function isReservedChar(aChar) {
  * @param {string} aRoute
  * @param {boolean} matchTillEnd, whether or not to add the Regexp dollar sign match till end identifier
  * @return {
- *    regexp:  a RegExp that matches the route
- *    , params: {array}   =>   /:hello/:world/  => ['hello', 'world']
+ *    regexp:  {RegExp}   =>  that matches the route
+ *    , params: {array}   =>  /:hello/:world/  => ['hello', 'world']
  * }
  */
 function createRoute() {
