@@ -86,12 +86,12 @@ function createRoute() {
   }
 
   function exactPath () {
-    var reg = ''
-      while (cur && canProceed()) {
-        reg += cur
-        next()
-      }
-    return reg
+    var exact = ''
+    while (cur && canProceed()) {
+      exact += cur
+      next()
+    }
+    return exact
   }
 
   function startMatching () {
