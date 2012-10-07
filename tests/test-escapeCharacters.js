@@ -3,28 +3,24 @@
 var maple = require('../treeRouter.js')
    , tree = new maple.RouteTree()
    , assert = require('assert')
+   , f = function(){}
 
-tree.define('/hello\\world', function () {})
-tree.define('/doop-dippy/dippy-doop', function () {})
-tree.define('/hello.world/', function () {})
-tree.define('/partial-[\\\\w]\\+', function(){}) //sudo regex
-tree.define('/example_[a\\-z]\\+', function(){}) //sudo regex
+tree.define('/dash-dash/hello-:dash', f)
+tree.define('/hello.world', f)
+tree.define('/plus+', f)
+tree.define('/amp&', f)
 
+var matcher
 
-var matcher = tree.match('/hello\\world')
+matcher = tree.match('/dash-dash/hello-anything')
 assert(matcher.perfect)
-
-matcher = tree.match('/doop-dippy/dippy-doop')
-assert(matcher.perfect)
+assert(matcher.params.dash === 'anything')
 
 matcher = tree.match('/hello.world/')
 assert(matcher.perfect)
 
-matcher = tree.match('/partial-words')
+matcher = tree.match('plus+')
 assert(matcher.perfect)
 
-matcher = tree.match('/example_alpha')
+matcher = tree.match('amp&')
 assert(matcher.perfect)
-
-matcher = tree.match('/example_alpha78')
-assert(!matcher.perfect)

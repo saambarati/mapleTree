@@ -6,10 +6,9 @@ var reservedChars = [
 ]
 
 var escapedChars = [
-  '.' 
-  , '-' 
+  '.'
+  , '-'
   , '/'
-  , '\\'
   , '+'
 ]
 
@@ -25,8 +24,8 @@ function isReservedChar(aChar) {
  * @param {string} aRoute
  * @param {boolean} matchTillEnd, whether or not to add the Regexp dollar sign match till end identifier
  * @return {
- *    regexp: that matches route
- *    , params: {array}   ---->   /:hello/:world/  => ['hello', 'world']
+ *    regexp:  a RegExp that matches the route
+ *    , params: {array}   =>   /:hello/:world/  => ['hello', 'world']
  * }
  */
 function createRoute() {
@@ -35,7 +34,7 @@ function createRoute() {
     , curIndex = 0
     , keys = []
     , regEx = ''
-    , flags = ['i']
+    , flags = ['i'] //for regexp constructor
     , prev = ''
 
 
@@ -45,7 +44,7 @@ function createRoute() {
   }
 
   function badRoute(token) {
-    throw new Error('unexpected token within route: ' + "'" + cur + "'" + ' at index:' + curIndex)  
+    throw new Error('unexpected token within route: ' + "'" + cur + "'" + ' at index:' + curIndex)
   }
 
   function next(token) {
@@ -53,7 +52,7 @@ function createRoute() {
       if (typeof token === 'string' && token !== cur) {
         return badRoute(cur)
       } else if (token instanceof RegExp && !token.test(cur)) {
-        return badRoute(cur) 
+        return badRoute(cur)
       }
     }
 
@@ -80,7 +79,7 @@ function createRoute() {
     keys.push(aKey)
 
     return '([^\\/]+)' //match everything except a '/'
-  } 
+  }
 
   function wildcard () {
     return '(.+)\\/' //capture everything but the final '/'
@@ -97,7 +96,7 @@ function createRoute() {
 
   function startMatching () {
     regEx = '^' //match from beginning
-      // NOTE to self, be careful about using question mark's for the {0, 1} previous match because it allows partial routes match one another. 
+      // NOTE to self, be careful about using question mark's for the {0, 1} previous match because it allows partial routes match one another.
       // this is especially pertinent to ('/') slashes where '/file/' could match '/files/' if the slash is optional
       while (cur) {
         switch (cur) {
@@ -109,14 +108,9 @@ function createRoute() {
             break
           default :
             if (isEscapedChar(cur)) {
+              regEx += '\\' + cur
               next() //get rid of current to see if we are escaping the value
-              if (prev === '\\' && isEscapedChar(cur)) { //sort of circuitous escape: don't escape incoming characters that are escaped. Incoming characters that are escaped indicate to not escape
-                regEx += cur
-                next()
-              } else {
-                regEx += '\\' + prev
-              }
-            } else {
+            } else { //default letters such as '/hello'
               regEx += exactPath()
             }
             break
@@ -138,7 +132,7 @@ function createRoute() {
   }
 
 
-  return begin.apply({}, Array.prototype.slice.call(arguments))
+  return begin.apply({}, [].slice.call(arguments))
 }
 
 

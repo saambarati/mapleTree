@@ -1,17 +1,17 @@
 {
   "name"           : "mapleTree"
   , "description"  : "Simple routing library for node.js"
-  , "version"      : "0.4.0" 
-  , "private"      : false 
-  , "author"       : "Saam Barati <saambarati1@gmail.com>" 
+  , "version"      : "0.4.1"
+  , "private"      : false
+  , "author"       : "Saam Barati <saambarati1@gmail.com>"
   , "contributors" : [ {"name" : "Saam Barati", "email" : "saambarati1@gmail.com"} ]
-  , "repository"   : { 
+  , "repository"   : {
                        "type"  : "git"
                        , "url" : "https://github.com/saambarati/mapleTree.git"
                      }
   , "bugs"         : { "url" : "https://github.com/saambarati/mapleTree/issues" }
   , "keywords"     : ["router", "routing", "route"]
-  , "license"      : "MIT" 
+  , "license"      : "MIT"
   , "engines"       : { "node" : ">=0.6.11" }
 
   , "main"         : "./treeRouter.js"
