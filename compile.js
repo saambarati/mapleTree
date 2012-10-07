@@ -76,6 +76,7 @@ function createRoute() {
         return badRoute(cur)
       }
     }
+
     keys.push(aKey)
 
     return '([^\\/]+)' //match everything except a '/'

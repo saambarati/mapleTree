@@ -42,12 +42,16 @@ tree.define('/files/:file.:format', function () {
    //will call below routes function ...
 })
 tree.define('/files/', function () {
-  console.log('arguments to next() length => ' + arguments.length) 
+  console.log('arguments to next() length => ' + arguments.length)
   console.log('next() was correctly invoked')
 })
 
 tree.define('/form.json', function () {
    console.log('form.json')
+})
+
+assert.throws(function() {
+  tree.define('/:willthrow@', function(){})
 })
 
 var matcher
@@ -114,6 +118,7 @@ assert.ok(matcher.fn)
 
 
 console.log('tests have passed in test-tree.js')
+
 
 
 
