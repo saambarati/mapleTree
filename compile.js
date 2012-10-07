@@ -71,7 +71,7 @@ function createRoute() {
     while (cur && canProceed()) {
       if (range.test(cur)) {
         aKey += cur
-          next()
+        next()
       } else {
         return badRoute(cur)
       }
