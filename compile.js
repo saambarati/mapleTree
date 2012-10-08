@@ -97,26 +97,26 @@ function createRoute() {
 
   function startMatching () {
     regEx = '^' //match from beginning
-      // NOTE to self, be careful about using question mark's for the {0, 1} previous match because it allows partial routes match one another.
-      // this is especially pertinent to ('/') slashes where '/file/' could match '/files/' if the slash is optional
-      while (cur) {
-        switch (cur) {
-          case '*' :
-            regEx += wildcard()
-            return regEx   //we are done
-          case ':' :
-            regEx += colon()
-            break
-          default :
-            if (isEscapedChar(cur)) {
-              regEx += '\\' + cur
-              next() //get rid of current to see if we are escaping the value
-            } else { //default letters such as '/hello'
-              regEx += exactPath()
-            }
-            break
-        }
+    // NOTE to self, be careful about using question mark's for the {0, 1} previous match because it allows partial routes match one another.
+    // this is especially pertinent to ('/') slashes where '/file/' could match '/files/' if the slash is optional
+    while (cur) {
+      switch (cur) {
+        case '*' :
+          regEx += wildcard()
+          return regEx   //we are done
+        case ':' :
+          regEx += colon()
+          break
+        default :
+          if (isEscapedChar(cur)) {
+            regEx += '\\' + cur
+            next() //get rid of escaped char
+          } else { //default letters such as '/hello'
+            regEx += exactPath()
+          }
+          break
       }
+    }
   }
 
   function begin (stringToEvaluate, matchTillEnd) {
