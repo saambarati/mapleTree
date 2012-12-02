@@ -47,3 +47,11 @@ assert(match('/prefix') === false)
 assert(match('/prefix-') === false)
 assert(match('/prefix-a') === true)
 
+match = maple.pattern('/trail/')
+assert(match('/trail') === false)
+assert(match('/trail/') === true)
+
+//optional
+match = maple.pattern('/trail/?')
+assert(match('/trail') === true)
+assert(match('/trail/') === true)
