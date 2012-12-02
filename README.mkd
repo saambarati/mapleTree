@@ -105,15 +105,26 @@ will return a `boolean` indicating whether it matches the parameter or not.
     console.log(match('/wildcard/some/extended/route/')) // true
 
 
-### Some Notes
+### Tidbits
 
 Routing using `match.next` will not match against the root (`/`) route. I figure if you need a function to run against
 the root, it is better served being run outside of the router, considering you want it to run every time.
 I could be wrong about this stance though, and am interested in listening to arguments defending the contrary.
 Maybe if enough people want the functionality I can add it as an option when instantiating the router similar to `fifo`.
 
+Trailing slashes at the end of routes *are* significant.
+
+    tree.define('/hello')
+
+is not the same as:
+
+    tree.define('/hello/')
+
+if you want to match both `'/hello'` and `'/hello/'`
+define your route this way:
+
+    tree.define('/hello/?')
+
+because it makes the trailing slash optional.
 
 ###### Licensed under The MIT License
-
-
-
