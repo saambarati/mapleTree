@@ -11,10 +11,12 @@ function b(){}
 function c(){}
 function d(){}
 function e(){}
+function f(){}
 
-tree.define('/trees.e/', a)
-tree.define('/trees/', b)
-tree.define('/tree/', c)
+tree.define('/trees.e', a)
+tree.define('/trees', b)
+tree.define('/tree', c)
+tree.define('/tree/deep', f)
 
 
 //taken straight from problem with tako
@@ -34,11 +36,20 @@ assert(matcher.perfect)
 assert(matcher.fn === d)
 
 matcher = tree.match('/trees.e')
+assert(matcher.perfect)
 assert(matcher.fn === a)
 
 matcher = tree.match('/trees')
+assert(matcher.perfect)
 assert(matcher.fn === b)
 
 matcher = tree.match('/tree')
+assert(matcher.perfect)
 assert(matcher.fn === c)
+
+matcher = tree.match('/tree/deep')
+assert(matcher.perfect)
+
+matcher = tree.match('/tree/deeper')
+assert(!matcher.perfect)
 

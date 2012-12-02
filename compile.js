@@ -83,7 +83,7 @@ function createRoute() {
   }
 
   function wildcard () {
-    return '(.+)\\/' //capture everything but the final '/'
+    return '(.+)' //capture everything but the final '/'
   }
 
   function exactPath () {

@@ -3,6 +3,16 @@ var util = require('util')
    , events = require('events')
    , compile = require('./compile.js')
    , assert = require('assert')
+   , DEBUG = false
+   , debug
+
+if (DEBUG) {
+  debug = function() {
+    console.log.apply(console, [].slice.call(arguments))
+  }
+} else {
+  debug = function(){}
+}
 
 
 /*
@@ -24,7 +34,7 @@ var RouteNode = function (reg_exp, params_a, cb) {
   self.regexp = reg_exp
   self.key = self.regexp.toString()
   self.callback = cb  //callback is optional, if we don't have a callback, it means that we aren't an executable route,
-  if (params_a) { self.params = params_a } 
+  if (params_a) { self.params = params_a }
 }
 
 /*
@@ -46,8 +56,8 @@ var RouteTree = function (options) {
  *
  * this function works based on the assumption that if the latter question mark routes match
  * then the earlier question marks in the route are assumed to be matching as well, therefore we can remove the ?marks
- * this function continually adds the path preceding the earliest ?mark into the paths array, 
- * stripping the ?mark, and reapplying the same logic to the rest of the string 
+ * this function continually adds the path preceding the earliest ?mark into the paths array,
+ * stripping the ?mark, and reapplying the same logic to the rest of the string
 */
 function getQMarkPaths(apath, paths) {
   var qi = apath.indexOf('?') //returns first occuring index
@@ -56,17 +66,14 @@ function getQMarkPaths(apath, paths) {
 
   if (qi === -1) { //recursion has finished
     paths.push(apath)
-    //console.log(paths)
-    //paths.forEach(function(aPath) { //test for qmark
-    //  assert(aPath.indexOf('?') === -1)
-    //})
+    debug('qmark paths => ' + paths)
     return paths
   }
   //take away ? mark and recursively add paths to support more than 1 qmark.
   while (apath.charAt(--i) !== '/')
     ;
 
-  paths.push(apath.slice(0, i+1)) //add current matching path without qmark but with '/'
+  paths.push(apath.slice(0, i)) //add current matching path without qmark and without ending '/'
   return getQMarkPaths(apath.slice(0, qi) + apath.slice(qi+1), paths) //remove current ? mark in question, and reapply logic to next potential ?mark
 }
 
@@ -77,32 +84,41 @@ function getQMarkPaths(apath, paths) {
  * @param {function} callback
  */
 RouteTree.prototype.define = function (path, callback) {
-   if (!path || !callback) { throw new Error('tree needs a path and a callback to be defined') }
+   if (!path || !callback) { throw new Error('mapleTree needs a path and a callback to define a route') }
    var prereq = / /g
-      , portions
-      , matches = []
       , i
       , j
       , paths
 
    if (typeof path === 'string') {
       if (prereq.test(path)) {
-         throw new Error('path cannot contain spaces')
+        throw new Error('defined path cannot contain spaces path => ' + path)
       }
       if (path === '/') {
          var rootNode = new RouteNode(/^\/$/, callback)
-         this.root.children.unshift(rootNode) //keep root at front of array to optimize the match against root, will stay O(1)
+         this.root.children.unshift(rootNode) //keep root at front of array to optimize the match against root. Will stay O(1)
       } else {
-        //generate questionmark paths
+         //generate questionmark paths
          paths = getQMarkPaths(path, [])
          paths.forEach(function (apath) {
-           apath = _removeBeginEndSlash(apath)
-           portions = apath.split('/') 
+           var portions = []
+             , sliceTo
+
+           while (apath.length) {
+             sliceTo = apath.indexOf('/', 1) //don't match the '/' that is at begnning but the one following the one at index 0
+             if (sliceTo !== -1) { //more slahes ('/') left
+               portions.push( apath.slice(0, sliceTo) ) //add current route i.e => '/hello' in '/hello/world'
+               apath = apath.slice(sliceTo) //before apath = '/hello/world' after apath = '/world'
+             } else { //whats left in apath is final portion of route being defined => '/someRoute' or '/'
+               portions.push(apath)
+               apath = ''
+             }            }
+           debug(portions)
            for (i = 0; i < portions.length; i+=1) {
-             portions[i] = '/'+portions[i]+'/'  //prepend slashes for each regexp to normalize compiled regexps
-             matches[i] = compile(portions[i])  //returns {regexp:reg , params:[id1,id2,...]}
+             portions[i] = compile(portions[i])  //returns {regexp:reg , params:[id1,id2,...]}
            }
-           this._defineRecursiveHelper(this.root, matches, callback, path) //note original path here for redefine warnings
+           debug(portions)
+           this._defineRecursiveHelper(this.root, portions, callback, path) //note original path here for redefine warnings
          }, this)
       }
    } else if (path instanceof RegExp) {
@@ -113,15 +129,15 @@ RouteTree.prototype.define = function (path, callback) {
 }
 
 RouteTree.prototype._defineRecursiveHelper = function (curNode, splats, cb, fullPath) {
-  var currentRoute = splats.shift() 
-     , newNode 
+  var currentRoute = splats.shift()
+     , newNode
      , i
      , curKey = currentRoute.regexp.toString()
 
   for (i = 0; i < curNode.children.length; i++) {    //does a child node with same key already exist?
-    if (curNode.children[i].key === curKey) {  
+    if (curNode.children[i].key === curKey) {
       if (splats.length) { this._defineRecursiveHelper(curNode.children[i], splats, cb, fullPath) }
-      else { 
+      else {
         //redefine callback, maybew throw error in future, or warn the user
         if (curNode.children[i].callback) { console.warn('WARNING: redefining route, this will create routing conflicts. Conflicted path => ' + fullPath) }
         curNode.children[i].callback = cb
@@ -129,7 +145,7 @@ RouteTree.prototype._defineRecursiveHelper = function (curNode, splats, cb, full
       return //don't allow anything else to happen on current call frame
     }
   }
-  newNode = new RouteNode(currentRoute.regexp, currentRoute.params) 
+  newNode = new RouteNode(currentRoute.regexp, currentRoute.params)
   curNode.children.push(newNode)
   if (splats.length) {
     this._defineRecursiveHelper(newNode, splats, cb, fullPath)
@@ -148,8 +164,6 @@ RouteTree.prototype.match = function (path) {
   var matcher = new Matcher()
     , decodedPath
 
-  path = _normalizePathForMatch(path) //prepend and append '/'
-
   try {
     decodedPath = decodeURIComponent(path)
   } catch (err) {
@@ -157,12 +171,12 @@ RouteTree.prototype.match = function (path) {
   }
 
   this._matchRecursiveHelper(this.root, decodedPath, matcher)
- 
+
   //callbacks are added in preorder fashion, so if we want filo, we must reverse the order of fns
   if (!this.fifo) { matcher.cbs.reverse() }
   matcher.fn = matcher.cbs.shift()
 
-  return matcher 
+  return matcher
 }
 
 /*
@@ -176,6 +190,7 @@ RouteTree.prototype._matchRecursiveHelper = function (curNode, curPath, matcher)
       , exe
       , mNode
       , mPath
+      , slicer
 
    for (i = 0; i < curNode.children.length; i+=1) {
       exe = curNode.children[i].regexp.exec(curPath)
@@ -183,8 +198,17 @@ RouteTree.prototype._matchRecursiveHelper = function (curNode, curPath, matcher)
          mNode = curNode.children[i]
          mNode.regexp.lastIndex = 0 //keep matching from start of str
          mPath = exe[0]
-         mPath = _removeBeginEndSlash(mPath)
-         if (exe.length > 1) { 
+         debug('mPath => ' + mPath)
+         debug('mPath.length => ' + mPath.length)
+         debug('curPath.length => ' + curPath.length)
+         slicer = curPath.slice(mPath.length)
+         debug('slicer => ' + slicer)
+
+         //incorrect partial match when slicer[0] !== '/' i.e => '/hell' will match in '/hello/world' but not be correct b/c slicer[0] === 'o'
+         //or if mPath === curPath, slicer === '' and we have a perfect match
+         if (mPath.length !== curPath.length && slicer.charAt(0) !== '/') continue
+
+         if (exe.length > 1) {
            if (mNode.params) {  //colon args
              for (j = 0; j < mNode.params.length && (j+1) < exe.length; j++) {
                matcher.params[mNode.params[j]] = exe[j+1] //mNode.params[j] contains the colon arg named string. i.e in => '/hello/:foo', mNode.params[j] === 'foo'
@@ -192,17 +216,21 @@ RouteTree.prototype._matchRecursiveHelper = function (curNode, curPath, matcher)
            } else {  //regex capture groups that aren't part of colon args, this will mostly be for wildcard routes '/*'
              for (j = 1; j < exe.length; j++) {
                //console.log(exe[j])
-               matcher.extras.push(exe[j]) 
+               matcher.extras.push(exe[j])
              }
            }
          }
-         curPath = curPath.slice(mPath.length + 1)
-         if (curPath.length && curPath !== '/') {    
+         //curPath = curPath.slice(mPath.length + 1)
+         curPath = curPath.slice(mPath.length)
+         debug('curPath => ' + curPath)
+         debug('curPath.length => ' + curPath.length)
+         //if (curPath.length && curPath !== '/') {
+         if (curPath.length) {
            if (mNode.callback) { matcher.cbs.push(mNode.callback) } //TODO, should I add callbacks consecutively if they are the same function from ? mark routes
            this._matchRecursiveHelper(mNode, curPath, matcher) //continute recursive search
          } else {
            if (mNode.callback) { //callback indicates this route was explicitly declared, not just a branch of another route, recursion ends
-             matcher.perfect = true 
+             matcher.perfect = true
              matcher.cbs.push(mNode.callback)
            }
          }
@@ -227,7 +255,7 @@ Matcher.prototype.next = function () {
 }
 
 
-/* 
+/*
  * pattern matching API
  *
  * @param {string} toMatch => similary type string that you would use in router.define
@@ -235,26 +263,23 @@ Matcher.prototype.next = function () {
 */
 
 function pattern(toMatch) {
-  if (toMatch.charAt(toMatch.length-1) !== '/') toMatch += '/'
-  //console.log(toMatch)
-
+  debug('pattern to match => ' + toMatch)
   var regexps = getQMarkPaths(toMatch, [])
 
   //reassign array to compiled regular expressions
   regexps.forEach(function(aPath, ix) {
     regexps[ix] = compile(aPath, true).regexp //'true' tells regexp compiler to math till end => '$'
+    debug('compiled regex => ' + regexps[ix])
   })
 
 
   if (regexps.length === 1) { //fast case
     regexps = regexps[0]
     return function (testAgainst) {
-      testAgainst = _normalizePathForMatch(testAgainst)
       return regexps.test(testAgainst)
     }
   } else { //test each potential path
     return function (testAgainst) {
-      testAgainst = _normalizePathForMatch(testAgainst)
       for (var i = 0; i < regexps.length; i++) {
         if (regexps[i].test(testAgainst)) return true
       }

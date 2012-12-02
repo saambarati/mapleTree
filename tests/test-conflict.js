@@ -14,5 +14,8 @@ tree.define('/wildcard/*', function () {})
 tree.define('/foo/bar/', function () {})
 tree.define('/foo/bar/', function () {})
 
+tree.define('/foo/bar', function () {})
+tree.define('/foo/bar', function () {})
+
 tree.define('/home/:filename.html', function (){})
 tree.define('/home/:anothername.html', function (){})

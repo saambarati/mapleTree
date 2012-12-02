@@ -1,38 +1,40 @@
 
 
 var maple = require('../treeRouter.js')
-   , tree = new maple.RouteTree({'fifo' : false})
+   , tree = new maple.RouteTree()
    , assert = require('assert')
 
 //note cbs.length is one less than matching routes, this is because the best match is placed in match.fn when '.match()' is invoked
 //keep in mind, these functions can be defined in any order, because there are no conflicts between them
-tree.define('/hello/', function () {
-  //console.log('/hello/')
+function a() {
   this.next()
-})
-tree.define('/hello/world', function () {
-  //console.log('/hello/world/')
+}
+function b() {
   this.next()
-})
-tree.define('/hello/world/foo/', function () {
-  //console.log('/hello/world/foo/')
+}
+function c() {
   this.next()
-})
-tree.define('/hello/world/foo/bar/', function () {
-  //console.log('/hello/world/foo/bar')
-  this.next() //note, there is no next for this route, but make sure no crash 
-})
+}
+function d() {
+  this.next()
+}
+tree.define('/hello', a)
+tree.define('/hello/world', b)
+tree.define('/hello/world/foo', c)
+tree.define('/hello/world/foo/bar', d)
 
 var match = tree.match('/hello/world/foo/bar')
 assert(match.cbs.length === 3)
+assert(match.fn === d)
+assert(match.cbs[2] === a)
+assert(match.cbs[1] === b)
+assert(match.cbs[0] === c)
 match.fn()
-//console.log('callbacks length after invocation => ' + match.cbs.length) 
 assert(match.cbs.length === 0)
 
-console.log('\n\n')
-match = tree.match('/hello/world/')
-//console.log('callbacks length before invocation => ' + match.cbs.length)
+match = tree.match('/hello/world')
 assert(match.cbs.length === 1)
+assert(match.fn === b)
+assert(match.cbs[0] === a)
 match.fn()
-//console.log('callbacks length after invocation => ' + match.cbs.length) 
 assert(match.cbs.length === 0)

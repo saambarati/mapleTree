@@ -5,10 +5,9 @@ var maple = require('../treeRouter.js')
   , matcher
 
 router.define('/hello/optional?/:sop?/third/:file.:format?', function () { })
-
 router.define('/noqmarks', function () { })
-
 router.define('/site/:user?', function(){})
+router.define('/optionalslash/?', function(){})
 
 matcher = router.match('/hello')
 assert(matcher.perfect)
@@ -19,7 +18,7 @@ assert(matcher.perfect)
 matcher = router.match('/hello/optional/second/')
 assert(!matcher.perfect) //not perfect b/c .../third/... is required if /:sop/ is present in the route there
 
-matcher = router.match('/hello/optional/test/third')
+matcher = router.match('/hello/optional/second/third')
 assert(matcher.perfect)
 
 matcher = router.match('/hello/optional/test/third')
@@ -49,3 +48,8 @@ assert.equal(matcher.params.user, 'admin')
 matcher = router.match('/site/user/notexist')
 assert(!matcher.perfect)
 console.log('passed all questionmark tests')
+
+matcher = router.match('/optionalslash')
+assert(matcher.perfect)
+matcher = router.match('/optionalslash/')
+assert(matcher.perfect)

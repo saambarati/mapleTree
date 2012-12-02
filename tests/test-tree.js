@@ -12,18 +12,18 @@ tree.define('/hello/saam', function () {
    console.log('hello saam')
 })
 
-tree.define('/colon/:hello/definite', function () {
-   console.log('colon definite')
-})
+function cdef () {}
+tree.define('/colon/:a/definite', cdef)
 //note, above route will hold preference because it was defined first
 //note, when routes overlap, it is good practice to name the colon arguments the same, because otherwise, you may run into funky behavior
-tree.define('/colon/:hello/:finish/', function () {
-   console.log('colon match')
-})
+function cab () {}
+tree.define('/colon/:a/:b', cab)
 
-tree.define('/wildcard/*', function () {
-   console.log('wildcard')
-})
+function wc () {}
+tree.define('/wildcard/*', wc)
+
+function root () {}
+tree.define('/', root)
 
 tree.define(/\/regexp\/match\//, function () {
    console.log('regexp match')
@@ -32,16 +32,12 @@ tree.define(/\/regexp\/(\w+)\/?/, function () {
   console.log('regexp with word group')
 })
 
-tree.define('/', function () { //root matching is optimized to run in constant time
-   console.log('root match')
-})
-
 tree.define('/files/:file.:format', function () {
    console.log('file and format')
    this.next.call(this, 'testing', 'argument', 'list')
    //will call below routes function ...
 })
-tree.define('/files/', function () {
+tree.define('/files', function () {
   console.log('arguments to next() length => ' + arguments.length)
   console.log('next() was correctly invoked')
 })
@@ -55,31 +51,39 @@ assert.throws(function() {
 })
 
 var matcher
-matcher = tree.match('/hello/saam/')
+matcher = tree.match('/hello/saam')
 assert.ok(matcher.perfect)
 
-matcher = tree.match('/hello/world/')
+matcher = tree.match('/hello/world')
 assert.ok(matcher.perfect)
+
+matcher = tree.match('/')
+assert(matcher.perfect)
+assert(matcher.fn === root)
 
 matcher = tree.match('/colon/saam/last')
+console.log(JSON.stringify(matcher.params))
 assert.ok(matcher.perfect)
-assert.equal(matcher.params.hello, 'saam')
-assert.equal(matcher.params.finish, 'last')
+assert(matcher.fn === cab)
+assert.equal(matcher.params.a, 'saam')
+assert.equal(matcher.params.b, 'last')
 
 matcher = tree.match('/colon/saam')
-assert.equal(false, matcher.perfect)
-assert.equal(matcher.params.hello, 'saam') //notice route doesn't match perfectly, but the param should still exist
+assert(false === matcher.perfect)
+assert(matcher.params.a === 'saam') //notice route doesn't match perfectly, but the param should still exist
 
 matcher = tree.match('/colon/saam/definite')
-assert.ok(matcher.perfect)
-assert.equal(matcher.params.hello, 'saam')
+assert(matcher.perfect)
+assert.equal(matcher.params.a, 'saam')
+assert(matcher.fn === cdef)
 
 matcher = tree.match('/colon/hello%20world/definite') //test decodeURIComponent
 assert.ok(matcher.perfect)
-assert.equal(matcher.params.hello, 'hello world')
+assert.equal(matcher.params.a, 'hello world')
 
 matcher = tree.match('/wildcard/i/can/match/anything')
-assert.ok(matcher.perfect)
+assert(matcher.perfect)
+assert(matcher.fn === wc)
 console.log(matcher.extras)
 assert.equal(matcher.extras[0], 'i/can/match/anything')
 
