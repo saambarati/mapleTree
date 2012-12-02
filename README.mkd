@@ -112,7 +112,7 @@ the root, it is better served being run outside of the router, considering you w
 I could be wrong about this stance though, and am interested in listening to arguments defending the contrary.
 Maybe if enough people want the functionality I can add it as an option when instantiating the router similar to `fifo`.
 
-Trailing slashes at the end of routes *are* significant.
+#### Trailing slashes at the end of routes *are* significant.
 
     tree.define('/hello')
 
