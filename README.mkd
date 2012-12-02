@@ -73,8 +73,8 @@ API
      match.fn()
      /* PRINTS =>
       *  /hello/world/foo
-      *  /hello/world/
-      *  /hello/
+      *  /hello/world
+      *  /hello
      */
 
      router.fifo = true  //first match is invoked first now
@@ -82,9 +82,9 @@ API
      match = router.match('/hello/world/foo')
      match.fn()
      /* PRINTS =>
-      *  /hello/
-      *  /hello/world/
-      *  /hello/world/foo/
+      *  /hello
+      *  /hello/world
+      *  /hello/world/foo
      */
 
 
@@ -98,10 +98,10 @@ will return a `boolean` indicating whether it matches the parameter or not.
     var match = mapleTree.pattern('/test/:var') //returns a function
     console.log(match('/test/yes')) // true
     console.log(match('/test'))    // false
-    console.log(match('/nope/'))    // false
+    console.log(match('/test/'))    // false
 
     var match = mapleTree.pattern('wildcard/*')
-    console.log(match('/wildcard/')) // false
+    console.log(match('/wildcard')) // false
     console.log(match('/wildcard/some/extended/route/')) // true
 
 
