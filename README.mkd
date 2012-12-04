@@ -30,11 +30,19 @@ API
      router.define('/hello/:foo', function () {
        console.log('hello/:foo')
      })
+     m = router.match('/hello/world')
+     //m.perfect === true
+     //m.params.foo === 'world'
+     //router.match('/hello/world/foo').perfect === false
 
      router.define('/files/:file.:format', function () { //note, the period is interpreted literally
        console.log('file callback')
        console.log('filename =>' + this.params.file + '.'+ this.params.format)
      })
+     m = router.match('/files/home.html')
+     //m.perfect === true
+     //m.params.file === 'home'
+     //m.params.format === 'html'
 
 #### router.match
 
@@ -66,8 +74,8 @@ API
     router.match('/files/home.html') //matcher.perfect === true
 
 ### Partial Matches -- *first in first out / first in last out*
-     var mapleTree = require('mapleTree')
-       , router = new mapleTree.RouteTree({'fifo' : false })
+
+     router = new mapleTree.RouteTree({'fifo' : false })
 
      router.define('/hello', function () {
        console.log('/hello')
@@ -103,18 +111,18 @@ API
 
 
 
-### URL Pattern Matching
+### URL Pattern Matching (or other patterns)
 The  `pattern` API works similarly to the `define` API. You pass `mapleTree.pattern` a patterned URL to match against, and it returns a function that when passed a string as a parameter
 will return a `boolean` indicating whether it matches the parameter or not.
 
     var mapleTree = require('mapleTree')
     var match = mapleTree.pattern('/test/:var') //returns a function
     console.log(match('/test/yes')) // true
-    console.log(match('/test'))    // false
+    console.log(match('/test'))     // false
     console.log(match('/test/'))    // false
 
     var match = mapleTree.pattern('wildcard/*')
-    console.log(match('/wildcard')) // false
+    console.log(match('/wildcard'))                      // false
     console.log(match('/wildcard/some/extended/route/')) // true
 
 
