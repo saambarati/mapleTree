@@ -36,7 +36,7 @@ API
        console.log('filename =>' + this.params.file + '.'+ this.params.format)
      })
 
-#### `router.match`
+#### router.match
 
      /*
       *  the matcher object  contains a few important properties. It is what is returned from a router.match() call
