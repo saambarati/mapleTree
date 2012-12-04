@@ -19,18 +19,24 @@ API
      var mapleTree = require('mapleTree')
        , router = new mapleTree.RouteTree()
 
+#### Normal route
+
      router.define('/foo/bar', function () {
        console.log('foo/bar route')
      })
+
+#### Colon Agruments
 
      router.define('/hello/:foo', function () {
        console.log('hello/:foo')
      })
 
-     router.define('/files/:file.:format', function () {
+     router.define('/files/:file.:format', function () { //note, the period is interpreted literally
        console.log('file callback')
        console.log('filename =>' + this.params.file + '.'+ this.params.format)
      })
+
+#### `router.match`
 
      /*
       *  the matcher object  contains a few important properties. It is what is returned from a router.match() call
@@ -41,6 +47,7 @@ API
       *  matcher.params = {Object}                       //collection of colon args
       *  matcher.next {function}                         //invoke next matching function if one exists
      */
+
      var match = router.match('/foo/bar')
      match.fn()                            //prints 'foo/bar route'
 
@@ -51,6 +58,12 @@ API
      match = router.match('/files/index.html')
      match.fn()  //prints 'filename => index.html'
 
+#### wildcard routes
+
+    router.define('/files/*')
+
+    router.match('/files')           //matcher.perfect === false
+    router.match('/files/home.html') //matcher.perfect === true
 
 ### Partial Matches -- *first in first out / first in last out*
      var mapleTree = require('mapleTree')
