@@ -162,13 +162,7 @@ RouteTree.prototype.match = function (path) {
   var matcher = new Matcher()
     , decodedPath
 
-  try {
-    decodedPath = decodeURIComponent(path)
-  } catch (err) {
-    decodedPath = path   //oh well
-  }
-
-  this._matchRecursiveHelper(this.root, decodedPath, matcher)
+  this._matchRecursiveHelper(this.root, path, matcher)
 
   //callbacks are added in preorder fashion, so if we want filo, we must reverse the order of fns
   if (!this.fifo) { matcher.cbs.reverse() } //TODO, consider optimizing this so this.fifo has to be reversed because !this.fifo === default setting
@@ -204,7 +198,13 @@ RouteTree.prototype._matchRecursiveHelper = function (curNode, curPath, matcher)
          if (exe.length > 1) {
            if (mNode.params) {  //colon args
              for (j = 0; j < mNode.params.length && (j+1) < exe.length; j++) {
-               matcher.params[mNode.params[j]] = exe[j+1] //mNode.params[j] contains the colon arg named string. i.e in => '/hello/:foo', mNode.params[j] === 'foo'
+               var param = exe[j+1];
+               try {
+                 param = decodeURIComponent(param)
+               } catch (err) {
+                 //oh well
+               }
+               matcher.params[mNode.params[j]] = param //mNode.params[j] contains the colon arg named string. i.e in => '/hello/:foo', mNode.params[j] === 'foo'
              }
            } else {  //regex capture groups that aren't part of colon args, this will mostly be for wildcard routes '/*'
              for (j = 1; j < exe.length; j++) {
