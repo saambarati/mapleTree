@@ -198,7 +198,7 @@ RouteTree.prototype._matchRecursiveHelper = function (curNode, curPath, matcher)
          if (exe.length > 1) {
            if (mNode.params) {  //colon args
              for (j = 0; j < mNode.params.length && (j+1) < exe.length; j++) {
-               var param = exe[j+1];
+               var param = exe[j+1]
                try {
                  param = decodeURIComponent(param)
                } catch (err) {
@@ -261,10 +261,8 @@ function pattern(toMatch) {
 
 
   if (regexps.length === 1) { //fast case
-    regexps = regexps[0]
-    return function (testAgainst) {
-      return regexps.test(testAgainst)
-    }
+    var reg = regexps[0]
+    return reg.test.bind(reg)
   } else { //test each potential path
     return function (testAgainst) {
       for (var i = 0; i < regexps.length; i++) {
